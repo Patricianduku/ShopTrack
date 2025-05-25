@@ -296,3 +296,8 @@ NEXTAUTH_URL=your_app_url
 - Mobile app (React Native)
 - AI-powered expense categorization
 - Receipt data extraction improvements
+## Setup
+1. Clone: `git clone https://github.com/Paticianduku/ShopTrack.git`
+2. Install: `npm install`
+3. Add `.env.local` with Supabase credentials.
+4. Run: `npm run dev`
