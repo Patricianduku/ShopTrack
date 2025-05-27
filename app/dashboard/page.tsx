@@ -16,7 +16,8 @@ import {
   PieChart as PieChartIcon,
   Calendar,
   ShoppingBag,
-  Store
+  Store,
+  X
 } from 'lucide-react';
 
 // Mock data for business demonstration
@@ -98,7 +99,9 @@ const RecentTransactions = () => (
   </Card>
 );
 
-const AddTransaction = ({ onClose }: { onClose: () => void }) => (
+type ModalProps = { onClose: () => void };
+
+const AddTransaction = ({ onClose }: ModalProps) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <Card className="w-full max-w-md">
       <CardHeader>
@@ -119,7 +122,7 @@ const AddTransaction = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-const VoiceInput = ({ onClose }: { onClose: () => void }) => (
+const VoiceInput = ({ onClose }: ModalProps) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <Card className="w-full max-w-md">
       <CardHeader>
@@ -140,7 +143,7 @@ const VoiceInput = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-const OCRScanner = ({ onClose }: { onClose: () => void }) => (
+const OCRScanner = ({ onClose }: ModalProps) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <Card className="w-full max-w-md">
       <CardHeader>
@@ -322,7 +325,7 @@ export default function Dashboard() {
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="font-medium text-green-800">Shop Open</span>
               </div>
-              <Badge variant="secondary" className="bg-green-200 text-green-800">
+              <Badge className="bg-green-200 text-green-800">
                 <ShoppingBag className="h-3 w-3 mr-1" />
                 Ready for Business
               </Badge>

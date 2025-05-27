@@ -15,15 +15,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatCurrency, calculatePercentageChange } from '@/lib/utils';
-import { TransactionType } from '@/types';
-
 // Importing Chart component from shadcn-ui
-import { Chart } from '@/components/ui/chart';
+import { ApexChart } from '@/components/ui/chart';
 
 export default function Analytics() {
   const [timeRange, setTimeRange] = useState('week');
   const [chartView, setChartView] = useState('overview');
-  
+  const [chartType, setChartType] = useState<'line' | 'bar' | 'area'>('line');
+
   // Create mock data for demonstration
   const mockData = {
     day: generateDayData(),
@@ -121,11 +120,17 @@ export default function Analytics() {
           <CardHeader>
             <CardTitle className="text-base font-medium flex justify-between items-center">
               <span>
-                {chartView === 'overview' ? 'Income vs Expenses' : 
-                 chartView === 'income' ? 'Income Trend' : 'Expense Trend'}
+                {chartView === 'overview'
+                  ? 'Income vs Expenses'
+                  : chartView === 'income'
+                  ? 'Income Trend'
+                  : 'Expense Trend'}
               </span>
-              <Select defaultValue="line">
-                <SelectTrigger className="w-[120px] h-8">
+              <Select
+                value={chartType}
+                onValueChange={(value: string) => setChartType(value as 'line' | 'bar' | 'area')}
+              >
+                <SelectTrigger className="w-[120px] h-8" aria-label="Chart Type">
                   <SelectValue placeholder="Chart Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -138,150 +143,54 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
-              {chartView === 'overview' ? (
-                <Chart
-                  type="line"
-                  options={{
-                    chart: {
-                      toolbar: { show: false }
-                    },
-                    tooltip: {
-                      theme: 'dark'
-                    },
-                    colors: ['#10B981', '#EF4444'],
-                    stroke: { width: 2, curve: 'smooth' },
-                    xaxis: {
-                      categories: currentData.labels,
-                      labels: {
-                        style: {
-                          colors: 'var(--muted-foreground)'
+              <ApexChart
+                type={chartType}
+                options={{
+                  chart: { toolbar: { show: false } },
+                  colors:
+                    chartView === 'overview'
+                      ? ['#10B981', '#EF4444']
+                      : chartView === 'income'
+                      ? ['#10B981']
+                      : ['#EF4444'],
+                  stroke: { width: 2, curve: 'smooth' },
+                  fill:
+                    chartType === 'area'
+                      ? {
+                          type: 'gradient',
+                          gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.7,
+                            opacityTo: 0.2,
+                            stops: [0, 90, 100],
+                          },
                         }
-                      }
+                      : undefined,
+                  xaxis: {
+                    categories: currentData.labels,
+                    labels: { style: { colors: 'var(--muted-foreground)' } },
+                  },
+                  yaxis: {
+                    labels: {
+                      formatter: (value: number) => `$${value}`,
+                      style: { colors: 'var(--muted-foreground)' },
                     },
-                    yaxis: {
-                      labels: {
-                        formatter: (value) => `$${value}`,
-                        style: {
-                          colors: 'var(--muted-foreground)'
-                        }
-                      }
-                    },
-                    legend: {
-                      position: 'top',
-                      horizontalAlign: 'right'
-                    },
-                    grid: {
-                      borderColor: 'var(--border)'
-                    }
-                  }}
-                  series={[
-                    {
-                      name: 'Income',
-                      data: currentData.incomeData
-                    },
-                    {
-                      name: 'Expenses',
-                      data: currentData.expenseData
-                    }
-                  ]}
-                />
-              ) : chartView === 'income' ? (
-                <Chart
-                  type="area"
-                  options={{
-                    chart: {
-                      toolbar: { show: false }
-                    },
-                    colors: ['#10B981'],
-                    stroke: { width: 2, curve: 'smooth' },
-                    fill: {
-                      type: 'gradient',
-                      gradient: {
-                        shadeIntensity: 1,
-                        opacityFrom: 0.7,
-                        opacityTo: 0.2,
-                        stops: [0, 90, 100]
-                      }
-                    },
-                    xaxis: {
-                      categories: currentData.labels,
-                      labels: {
-                        style: {
-                          colors: 'var(--muted-foreground)'
-                        }
-                      }
-                    },
-                    yaxis: {
-                      labels: {
-                        formatter: (value) => `$${value}`,
-                        style: {
-                          colors: 'var(--muted-foreground)'
-                        }
-                      }
-                    },
-                    tooltip: {
-                      theme: 'dark'
-                    },
-                    grid: {
-                      borderColor: 'var(--border)'
-                    }
-                  }}
-                  series={[
-                    {
-                      name: 'Income',
-                      data: currentData.incomeData
-                    }
-                  ]}
-                />
-              ) : (
-                <Chart
-                  type="area"
-                  options={{
-                    chart: {
-                      toolbar: { show: false }
-                    },
-                    colors: ['#EF4444'],
-                    stroke: { width: 2, curve: 'smooth' },
-                    fill: {
-                      type: 'gradient',
-                      gradient: {
-                        shadeIntensity: 1,
-                        opacityFrom: 0.7,
-                        opacityTo: 0.2,
-                        stops: [0, 90, 100]
-                      }
-                    },
-                    xaxis: {
-                      categories: currentData.labels,
-                      labels: {
-                        style: {
-                          colors: 'var(--muted-foreground)'
-                        }
-                      }
-                    },
-                    yaxis: {
-                      labels: {
-                        formatter: (value) => `$${value}`,
-                        style: {
-                          colors: 'var(--muted-foreground)'
-                        }
-                      }
-                    },
-                    tooltip: {
-                      theme: 'dark'
-                    },
-                    grid: {
-                      borderColor: 'var(--border)'
-                    }
-                  }}
-                  series={[
-                    {
-                      name: 'Expenses',
-                      data: currentData.expenseData
-                    }
-                  ]}
-                />
-              )}
+                  },
+                  tooltip: { theme: 'dark' },
+                  legend: { position: 'top', horizontalAlign: 'right' },
+                  grid: { borderColor: 'var(--border)' },
+                }}
+                series={
+                  chartView === 'overview'
+                    ? [
+                        { name: 'Income', data: currentData.incomeData },
+                        { name: 'Expenses', data: currentData.expenseData },
+                      ]
+                    : chartView === 'income'
+                    ? [{ name: 'Income', data: currentData.incomeData }]
+                    : [{ name: 'Expenses', data: currentData.expenseData }]
+                }
+              />
             </div>
           </CardContent>
         </Card>
@@ -298,7 +207,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <div className="h-[200px]">
-                <Chart
+                <ApexChart
                   type="donut"
                   options={{
                     chart: {
@@ -315,7 +224,7 @@ export default function Analytics() {
                     tooltip: {
                       theme: 'dark',
                       y: {
-                        formatter: (value) => `$${value}`
+                        formatter: (value: number) => `$${value}`
                       }
                     }
                   }}
@@ -351,7 +260,7 @@ export default function Analytics() {
             </CardHeader>
             <CardContent>
               <div className="h-[200px]">
-                <Chart
+                <ApexChart
                   type="donut"
                   options={{
                     chart: {
@@ -368,7 +277,7 @@ export default function Analytics() {
                     tooltip: {
                       theme: 'dark',
                       y: {
-                        formatter: (value) => `$${value}`
+                        formatter: (value: number) => `$${value}`
                       }
                     }
                   }}
@@ -405,7 +314,7 @@ export default function Analytics() {
           </CardHeader>
           <CardContent>
             <div className="h-[250px]">
-              <Chart
+              <ApexChart
                 type="bar"
                 options={{
                   chart: {
@@ -438,7 +347,7 @@ export default function Analytics() {
                   },
                   yaxis: {
                     labels: {
-                      formatter: (value) => `$${value}`,
+                      formatter: (value: number) => `$${value}`,
                       style: {
                         colors: 'var(--muted-foreground)'
                       }
@@ -447,7 +356,7 @@ export default function Analytics() {
                   tooltip: {
                     theme: 'dark',
                     y: {
-                      formatter: (value) => `$${value}`
+                      formatter: (value: number) => `$${value}`
                     }
                   },
                   fill: {
@@ -482,7 +391,12 @@ export default function Analytics() {
         
         {/* Export Button */}
         <div className="mt-8 flex justify-center">
-          <Button variant="outline" className="w-full max-w-xs">
+          <Button
+            variant="outline"
+            className="w-full max-w-xs"
+            aria-label="Export Analytics Report"
+            // TODO: Implement export to CSV/PDF functionality
+          >
             <Calendar className="h-4 w-4 mr-2" />
             Export Analytics Report
           </Button>

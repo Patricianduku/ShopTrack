@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import * as RechartsPrimitive from 'recharts';
+import ReactApexChart from 'react-apexcharts';
 
 import { cn } from '@/lib/utils';
 
@@ -363,3 +364,18 @@ export {
   ChartLegendContent,
   ChartStyle,
 };
+
+export function Chart(props: React.ComponentProps<typeof ChartContainer>) {
+  return <ChartContainer {...props} />;
+}
+
+type ApexChartProps = {
+  type: 'line' | 'bar' | 'area' | 'donut';
+  options: any;
+  series: any;
+  [key: string]: any;
+};
+
+export function ApexChart(props: ApexChartProps) {
+  return <ReactApexChart {...props} />;
+}

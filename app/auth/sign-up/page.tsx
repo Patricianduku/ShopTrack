@@ -1,3 +1,6 @@
+'use client';
+import React from 'react';
+
 import AuthLayout from '@/components/auth/auth-layout';
 import SignUpForm from '@/components/auth/sign-up-form';
 
